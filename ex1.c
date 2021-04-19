@@ -4,12 +4,16 @@
 int main(int argc, char *argv[]) {
     int k = argv[0];
     int max_iter = 200;
-    char *input_file_name = argv[2];
+    char *input_path;
     if (argc == 3) {
         max_iter = argv[1];
+        input_path = argv[2];
+    }
+    else {
+        input_path = argv[1];
     }
 
-    FILE *input_file = fopen(input_file_name,'rb');
+    FILE *input_file = fopen(input_path,'rb');
     char buffer[1000];
     char *point;
     char ch;
