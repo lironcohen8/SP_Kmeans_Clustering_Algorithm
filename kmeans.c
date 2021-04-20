@@ -64,6 +64,10 @@ int main(int argc, char *argv[]) {
             j++;
         }
         points[i] = point;
+        for (i = 0; i < dimension; i++) {
+            printf("%f\n", point[i]);
+        }
+        break;
     }
     return 0;
 }
