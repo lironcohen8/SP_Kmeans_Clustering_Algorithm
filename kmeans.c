@@ -12,11 +12,11 @@ int calcDimension(char buffer[]) {
     c = buffer[i];
     while (c != '\n') {
         if (c == ',') {
-            printf("%c", c);
             dimension++;
         }
         c= buffer[++i];
     }
+    buffer[i] = '\0';
     return dimension+1;
 }
 
@@ -43,24 +43,25 @@ int main(int argc, char *argv[]) {
     while (fgets(buffer,1000,input_file) != NULL) { 
         if (numOfPoints == 0) {
             dimension = calcDimension(buffer);
-            printf("%s", "dimenstion ");
-            printf("%d", dimension);
-            printf("%s", " after dimenstion ");
         }
         numOfPoints++;
     }
+    fclose(input_file);
 
     pointStr = (char *)calloc(dimension, 100*sizeof(char));
     point = (float *)calloc(dimension, sizeof(float)); 
     points = (float **)calloc(numOfPoints, sizeof(point));
+    
+    input_file = fopen(input_path,"r");
 
     for (i = 0; i < numOfPoints; i++) {
         fgets(buffer,1000,input_file);
         pointStr = strtok(buffer, ",");
-        for (j = 0; j < dimension; j++) {
-            break;
-            printf("%d", pointStr[j]);
-            /*point[j] = atof(pointStr[j]);*/
+        j = 0;
+        while (pointStr != NULL) {
+            point[j] = atof(pointStr);
+            pointStr = strtok(NULL, ",");
+            j++;
         }
         points[i] = point;
     }
