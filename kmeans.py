@@ -84,7 +84,11 @@ def initclusters(k):
 
 def printResult():
     for centroid in centroids:
-        print(centroid)
+        for i in range(len(centroid)):
+            print("{:.4f}".format(centroid[i]), end="")
+            if (i < (len(centroid)-1)):
+                print(",", end="")
+        print("\n",end="")
 
 
 def main():
@@ -100,8 +104,6 @@ def main():
     else:
         """error"""
         pass 
-        
-    print(k,max_iter,filePath)
     
     readFile(filePath)
     initclusters(k)
