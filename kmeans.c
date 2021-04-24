@@ -92,7 +92,7 @@ float * calcCentroidForCluster(int clusterInd) {
 
     for (i = 0; i < dimension; i++) {
         sumVector[i] /= numOfVectorsInCluster;
-        /*sumVector[i] = ((int)(10000*sumVector[i]))/10000;*/
+        /*sumVector[i] = (((int)(10000*sumVector[i])) * 1.0)/10000;*/
     }
     return sumVector;
 }
