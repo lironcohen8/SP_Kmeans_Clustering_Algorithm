@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <assert.h>
-int k, max_iter, dimension, numOfVectors = 0;
+int k, max_iter, dimension, numOfVectors = 0, changes = 1;
 float **vectors, **centroids;
 int **clusters, *clustersSizes;
 void *calloc(size_t nitems, size_t size);
@@ -72,16 +72,53 @@ void assignVectorToCluster() {
     }
 }
 
-void calcCentroidForCluster(cluster):
-    numOfVectors = len(cluster)
-    sumVector = [sum(elts) for elts in zip(*cluster)]
-    for i in range(len(sumVector)):
-        sumVector[i] = float("{:.4f}".format(sumVector[i]/numOfVectors))
-        
-    return sumVector
+float * calcCentroidForCluster(int clusterInd) {
+    int numOfVectors, i, j;
+    float * sumVector = (float *)calloc(dimension, sizeof(float));
+    int * cluster;
+    numOfVectors = clustersSizes[clusterInd];
+    cluster = clusters[clusterInd];
+    for (i = 0; i < dimension; i++) {
+        for (j = 0; j < numOfVectors; j++) {
+            sumVector[i] += (vectors[cluster[j]])[i];
+        }
+    for (i = 0; i < dimension; i++) {
+        sumVector[i] = (int)(10000*sumVector[i])/10000;
+        }
+    }
+    return sumVector;
+}
+
+void updateCentroidValue() {
+    int i, j;
+    float * newValue;
+    changes = 0;
+    for (i = 0; i < k; i++) {
+        newValue = calcCentroidForCluster(i);
+        for (j = 0; j < dimension; j++) {
+            if (newValue[j] != centroids[i][j]) {
+                changes += 1;
+            }    
+            centroids[i][j] = newValue[j];
+        }
+    }
+}
+
+void printResult() {
+    int i, j;
+    for (i = 0; i < k; i++) {
+        for (j = 0; j < dimension; j++) {
+            printf("%.4f", centroids[i][j]);
+            if (j < dimension - 1) {
+                printf(",");
+            }
+        }
+        printf("\n");
+    }
+}
 
 int main(int argc, char *argv[]) {
-    int i, j;
+    int i, j, counter = 1;
     char *input_path, buffer[1000], *vectorStr;
     FILE *input_file;
 
@@ -124,5 +161,11 @@ int main(int argc, char *argv[]) {
     }
     initCentroids();
     clusters = (int **)calloc(k, numOfVectors*sizeof(int));
+    while ((counter<=max_iter) && (changes > 0)) {
+        assignVectorToCluster();
+        updateCentroidValue();
+        counter += 1;
+    }
+    printResult();
     return 0;
 }
