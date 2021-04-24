@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <assert.h>
 int k, max_iter, dimension, numOfVectors = 0, changes = 1;
-float **vectors, **centroids;
+double **vectors, **centroids;
 int **clusters, *clustersSizes;
 void *calloc(size_t nitems, size_t size);
 char *strtok(char * str, const char *delim);
@@ -25,17 +25,17 @@ int calcDimension(char buffer[]) {
 
 void initCentroids() {
     int i,j;
-    centroids = (float **)calloc(k, dimension*sizeof(float));
+    centroids = (double **)calloc(k, dimension*sizeof(double));
     for (i = 0; i < k; i++) {
-        centroids[i] = (float *)calloc(dimension, sizeof(float)); 
+        centroids[i] = (double *)calloc(dimension, sizeof(double)); 
         for (j = 0; j < dimension; j++) {
             centroids[i][j] = vectors[i][j];
         }
     }
 }
 
-float distance(float *vector1, float *vector2) {
-    float dis = 0;
+double distance(double *vector1, double *vector2) {
+    double dis = 0;
     int i;
     for (i = 0; i < dimension; i++) {
         dis += (vector1[i]-vector2[i])*(vector1[i]-vector2[i]);
@@ -43,8 +43,8 @@ float distance(float *vector1, float *vector2) {
     return dis;
 }
 
-int closestCentroid(float *vector) {
-    float minDis, dis;
+int closestCentroid(double *vector) {
+    double minDis, dis;
     int minCenInd,i;
     minDis = distance(vector, centroids[0]);
     minCenInd = 0;
@@ -77,9 +77,9 @@ void assignVectorToCluster() {
     }
 }
 
-float * calcCentroidForCluster(int clusterInd) {
+double * calcCentroidForCluster(int clusterInd) {
     int numOfVectorsInCluster, i, j;
-    float * sumVector = (float *)calloc(dimension, sizeof(float));
+    double * sumVector = (double *)calloc(dimension, sizeof(double));
     int * cluster;
     numOfVectorsInCluster = clustersSizes[clusterInd];
     cluster = clusters[clusterInd];
@@ -99,7 +99,7 @@ float * calcCentroidForCluster(int clusterInd) {
 
 void updateCentroidValue() {
     int i, j;
-    float * newValue;
+    double * newValue;
     changes = 0;
     for (i = 0; i < k; i++) {
         newValue = calcCentroidForCluster(i);
@@ -151,7 +151,7 @@ int main(int argc, char *argv[]) {
     fclose(input_file);
 
     vectorStr = (char *)calloc(dimension, 100*sizeof(char));
-    vectors = (float **)calloc(numOfVectors, dimension*sizeof(float));
+    vectors = (double **)calloc(numOfVectors, dimension*sizeof(double));
     
     input_file = fopen(input_path,"r");
 
@@ -159,7 +159,7 @@ int main(int argc, char *argv[]) {
         fgets(buffer,1000,input_file);
         vectorStr = strtok(buffer, ",");
         j = 0;
-        vectors[i] = (float *)calloc(dimension, sizeof(float)); 
+        vectors[i] = (double *)calloc(dimension, sizeof(double)); 
         while (vectorStr != NULL) {
             vectors[i][j] = atof(vectorStr);
             vectorStr = strtok(NULL, ",");
