@@ -86,7 +86,6 @@ def printResult():
     for centroid in centroids:
         print(centroid)
 
-        
 
 def main():
     numOfArgs = len(sys.argv)

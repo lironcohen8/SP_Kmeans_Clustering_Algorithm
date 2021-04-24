@@ -58,33 +58,41 @@ int closestCentroid(float *vector) {
     }   
     return minCenInd;
 }
-
+ 
 void assignVectorToCluster() {
-    int i, newCentroidInd;
+    int i, newCentroidInd, clusterSize;
+    int * cluster;
     clustersSizes = (int *)calloc(k, sizeof(int));
-    for (i = 0; i < k; i++) {
+
+    for (i = 0; i < k; i++) { 
         clusters[i] = (int *)calloc(numOfVectors, sizeof(int));
     }
         
     for (i = 0; i < numOfVectors; i++) {
         newCentroidInd = closestCentroid(vectors[i]);
-        clusters[newCentroidInd][clustersSizes[newCentroidInd]++] = i;
+        cluster = clusters[newCentroidInd];
+        clusterSize = clustersSizes[newCentroidInd];
+        cluster[clusterSize] = i;
+        clustersSizes[newCentroidInd]++;
     }
 }
 
 float * calcCentroidForCluster(int clusterInd) {
-    int numOfVectors, i, j;
+    int numOfVectorsInCluster, i, j;
     float * sumVector = (float *)calloc(dimension, sizeof(float));
     int * cluster;
-    numOfVectors = clustersSizes[clusterInd];
+    numOfVectorsInCluster = clustersSizes[clusterInd];
     cluster = clusters[clusterInd];
+    
     for (i = 0; i < dimension; i++) {
-        for (j = 0; j < numOfVectors; j++) {
+        for (j = 0; j < numOfVectorsInCluster; j++) {
             sumVector[i] += (vectors[cluster[j]])[i];
         }
+    }
+
     for (i = 0; i < dimension; i++) {
-        sumVector[i] = (int)(10000*sumVector[i])/10000;
-        }
+        sumVector[i] /= numOfVectorsInCluster;
+        /*sumVector[i] = ((int)(10000*sumVector[i]))/10000;*/
     }
     return sumVector;
 }
@@ -133,7 +141,6 @@ int main(int argc, char *argv[]) {
     }
 
     input_file = fopen(input_path,"r");
-    printf("%d %d %s\n", k, max_iter, input_path);
 
     while (fgets(buffer,1000,input_file) != NULL) { 
         if (numOfVectors == 0) {
