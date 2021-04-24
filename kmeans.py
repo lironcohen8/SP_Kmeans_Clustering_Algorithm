@@ -47,7 +47,6 @@ def calcCentroidForCluster(cluster):
     sumVector = [sum(elts) for elts in zip(*cluster)]
     for i in range(len(sumVector)):
         sumVector[i] = float("{:.4f}".format(sumVector[i]/numOfVectors))
-        
     return sumVector
 
 
