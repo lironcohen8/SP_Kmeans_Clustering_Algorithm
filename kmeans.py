@@ -13,18 +13,20 @@ global centroids
 centroids = []
 
 def distance(vector1, vector2):
+    '''Claculates the distance between two vectors'''
     dis = 0
-    for i in range(len(vector1)):
-        dis += (vector1[i]-vector2[i])**2
+    for i in range(len(vector1)): #Runs for each dimension
+        dis += (vector1[i]-vector2[i])**2 
     
     return dis
     
 
 def closestCentroid(vector):
-    minDis = distance(vector, centroids[0])
-    minCenInd = 0
+    '''Finds the closest centroid to a vector by the distance function'''
+    minDis = distance(vector, centroids[0]) #Initiate the minimum distance to be the distance from the first centroid
+    minCenInd = 0 #Initiate the closest centroid to be the first one
     
-    for i in range(len(centroids)):
+    for i in range(len(centroids)): #For each centroid (there are K)
         dis = distance(vector, centroids[i])
         if dis < minDis:
             minDis = dis
@@ -34,29 +36,34 @@ def closestCentroid(vector):
  
 
 def assignVectorToCluster():
-    for i in range(len(clusters)):
+    '''Finds the closest centroid for each vector and adds
+    the vector to the centroids cluster'''
+    for i in range(len(clusters)): #Clearing all clusters (we do not want to remmember what was here)
         clusters[i] = []
         
     for vector in vectors:
-        newCentroidInd = closestCentroid(vector)
-        clusters[newCentroidInd].append(vector)
+        newCentroidInd = closestCentroid(vector) #Finds the closest centroid
+        clusters[newCentroidInd].append(vector) #Adds the vector to the appropriate cluster 
 
 
 def calcCentroidForCluster(cluster):
-    numOfVectors = len(cluster)
-    sumVector = [sum(elts) for elts in zip(*cluster)]
+    '''Calculates the centroid for a given cluster'''
+    numOfVectors = len(cluster) #Checks how many vectors are in the cluster
+    sumVector = [sum(elts) for elts in zip(*cluster)] #Sums all the vectors (seperated for each dimension)
     for i in range(len(sumVector)):
-        sumVector[i] = float(sumVector[i]/numOfVectors)
+        sumVector[i] = float(sumVector[i]/numOfVectors) #Replace the sum with the average
     return sumVector
 
 
 def updateCentroidValue():
+    '''Updates the centroid value for each cluster and checks if 
+    it is different then what we had before'''
     changes = 0
     
     for i in range(len(clusters)):
         newValue = calcCentroidForCluster(clusters[i])
 
-        if newValue != centroids[i]:
+        if newValue != centroids[i]: #If the centroid changed
             changes += 1
             
         centroids[i] = newValue
@@ -65,7 +72,17 @@ def updateCentroidValue():
         
 
 
-def readFile(filePath):
+def readFile():
+    '''Reading the input file and put the data into the 'vectors' list'''
+    for line in sys.stdin:
+        stripped = line.strip()
+        if not stripped: 
+            break
+        vector = line.split(",")
+        for i in range(len(vector)):
+            vector[i] = float(vector[i])
+        vectors.append(vector)
+    """
     with open(filePath, "r") as f:
         lines = f.readlines()
         for line in lines:
@@ -74,38 +91,38 @@ def readFile(filePath):
             for i in range(len(vector)):
                 vector[i] = float(vector[i])
             vectors.append(vector)
+            """
 
 
 def initclusters(k):
+    '''Initialize the clusters and their centroids from the first K vectors'''
     for i in range(k):
         centroids.append(vectors[i])
         clusters[i] = []    
 
 
 def printResult():
+    '''Prints the centroids'''
     for centroid in centroids:
         for i in range(len(centroid)):
-            print("{:.4f}".format(centroid[i]), end="")
-            if (i < (len(centroid)-1)):
-                print(",", end="")
-        print("\n",end="")
+            centroid[i] = "{:.4f}".format(centroid[i]) #Format the floats precision to 4 digits 
+
+    for centroid in centroids:
+        print(','.join(map(str,centroid))) #Prints the floats as strings
 
 
 def main():
     numOfArgs = len(sys.argv)
-    
     k = int(sys.argv[1])
-    if numOfArgs == 4:
+    if numOfArgs == 3:
         max_iter = int(sys.argv[2])
-        filePath = sys.argv[3]
-    elif numOfArgs == 3:
+    elif numOfArgs == 2:
         max_iter = 200
-        filePath = sys.argv[2]
     else:
         """error"""
         pass 
     
-    readFile(filePath)
+    readFile()
     initclusters(k)
 
     counter = 1
