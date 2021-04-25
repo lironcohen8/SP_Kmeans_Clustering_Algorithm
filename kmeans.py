@@ -84,7 +84,7 @@ def readFile():
         vectors.append(vector)
 
 
-def initclusters(k):
+def initCentroids(k):
     '''Initialize the clusters and their centroids from the first K vectors'''
     assert k<=len(vectors), "The number of clusters must be lower or equal to the number of vectors"
     for i in range(k):
@@ -121,7 +121,7 @@ def main(max_iter=200):
         max_iter = int(sys.argv[2])
     
     readFile()
-    initclusters(k)
+    initCentroids(k)
 
     counter = 1
     didCentroidsChange = True

@@ -23,9 +23,39 @@ int calcDimension(char buffer[]) {
     return dimension+1;
 }
 
+void calcDimensionAndNumOfVectors() {
+    char buffer[1000];
+     while (fgets(buffer,1000,stdin) != NULL) { 
+        if (numOfVectors == 0) {
+            dimension = calcDimension(buffer);
+        }
+        numOfVectors++;
+    }
+}
+
+void readFile() {
+    int i, j;
+    char *vectorStr, buffer[1000];
+    vectorStr = (char *)calloc(dimension, 100*sizeof(char));
+    vectors = (double **)calloc(numOfVectors, dimension*sizeof(double));
+    rewind(stdin);
+    for (i = 0; i < numOfVectors; i++) {
+        fgets(buffer,1000,stdin);
+        vectorStr = strtok(buffer, ",");
+        j = 0;
+        vectors[i] = (double *)calloc(dimension, sizeof(double)); 
+        while (vectorStr != NULL) {
+            vectors[i][j] = atof(vectorStr);
+            vectorStr = strtok(NULL, ",");
+            j++;
+        }
+    }
+}
+
 void initCentroids() {
     int i,j;
     centroids = (double **)calloc(k, dimension*sizeof(double));
+    assert(k <= numOfVectors);
     for (i = 0; i < k; i++) {
         centroids[i] = (double *)calloc(dimension, sizeof(double)); 
         for (j = 0; j < dimension; j++) {
@@ -126,53 +156,25 @@ void printResult() {
 }
 
 int main(int argc, char *argv[]) {
-    int i, j, counter = 1;
-    char *input_path, buffer[1000], *vectorStr;
-    FILE *input_file;
-
+    int counter = 1;
+    assert(argc == 3 || argc == 2);
     sscanf(argv[1], "%d", &k);
     max_iter = 200;
-    if (argc == 4) {
+    if (argc == 3) {
         sscanf(argv[2], "%d", &max_iter);
-        input_path = argv[3];
     }
-    else {
-        input_path = argv[2];
-    }
-
-    input_file = fopen(input_path,"r");
-
-    while (fgets(buffer,1000,input_file) != NULL) { 
-        if (numOfVectors == 0) {
-            dimension = calcDimension(buffer);
-        }
-        numOfVectors++;
-    }
-    fclose(input_file);
-
-    vectorStr = (char *)calloc(dimension, 100*sizeof(char));
-    vectors = (double **)calloc(numOfVectors, dimension*sizeof(double));
     
-    input_file = fopen(input_path,"r");
-
-    for (i = 0; i < numOfVectors; i++) {
-        fgets(buffer,1000,input_file);
-        vectorStr = strtok(buffer, ",");
-        j = 0;
-        vectors[i] = (double *)calloc(dimension, sizeof(double)); 
-        while (vectorStr != NULL) {
-            vectors[i][j] = atof(vectorStr);
-            vectorStr = strtok(NULL, ",");
-            j++;
-        }
-    }
+    calcDimensionAndNumOfVectors();
+    readFile();
     initCentroids();
+    
     clusters = (int **)calloc(k, numOfVectors*sizeof(int));
     while ((counter<=max_iter) && (changes > 0)) {
         assignVectorToCluster();
         updateCentroidValue();
         counter += 1;
     }
+
     printResult();
     return 0;
 }
