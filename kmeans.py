@@ -82,16 +82,6 @@ def readFile():
         for i in range(len(vector)):
             vector[i] = float(vector[i])
         vectors.append(vector)
-    """
-    with open(filePath, "r") as f:
-        lines = f.readlines()
-        for line in lines:
-            line = line[:-1]
-            vector = line.split(",")
-            for i in range(len(vector)):
-                vector[i] = float(vector[i])
-            vectors.append(vector)
-            """
 
 
 def initclusters(k):
