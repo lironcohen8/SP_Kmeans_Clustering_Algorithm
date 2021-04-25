@@ -86,6 +86,7 @@ def readFile():
 
 def initclusters(k):
     '''Initialize the clusters and their centroids from the first K vectors'''
+    assert k<=len(vectors), "The number of clusters must be lower or equal to the number of vectors"
     for i in range(k):
         centroids.append(vectors[i])
         clusters[i] = []    
@@ -101,16 +102,23 @@ def printResult():
         print(','.join(map(str,centroid))) #Prints the floats as strings
 
 
-def main():
+def isPositiveInt(s):
+    try:
+        i = int(s)
+        return i>0 
+    except:
+        return False
+
+
+def main(max_iter=200):
     numOfArgs = len(sys.argv)
+    assert numOfArgs==2 or numOfArgs==3, "Incorrect number of arguments" #Checks if we have the right amount of args
+    assert isPositiveInt(sys.argv[1]), "'k' is not a positive int" #Checks if k is an int
     k = int(sys.argv[1])
+
     if numOfArgs == 3:
+        assert isPositiveInt(sys.argv[2]), "'max_iter' is not an positive int" #Checks if max_iter is an int
         max_iter = int(sys.argv[2])
-    elif numOfArgs == 2:
-        max_iter = 200
-    else:
-        """error"""
-        pass 
     
     readFile()
     initclusters(k)
@@ -122,7 +130,7 @@ def main():
         assignVectorToCluster()
         didCentroidsChange = updateCentroidValue()
         counter += 1
-        
+    
     printResult()
 
 if __name__ == "__main__":
