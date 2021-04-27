@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <assert.h>
 int k, max_iter, dimension, numOfVectors = 0, changes = 1;
+float rawK, rawMaxIter;
 double **vectors, **centroids;
 int **clusters, *clustersSizes;
 void *calloc(size_t nitems, size_t size);
@@ -52,7 +53,7 @@ void readFile() {
 void initCentroids() {
     int i,j;
     centroids = (double **)calloc(k, dimension*sizeof(double));
-    assert(k <= numOfVectors);
+    assert(k < numOfVectors);
     for (i = 0; i < k; i++) {
         centroids[i] = (double *)calloc(dimension, sizeof(double)); 
         for (j = 0; j < dimension; j++) {
@@ -155,10 +156,16 @@ void printResult() {
 int main(int argc, char *argv[]) {
     int counter = 1;
     assert(argc == 3 || argc == 2);
-    sscanf(argv[1], "%d", &k);
+
+    assert(sscanf(argv[1], "%f", &rawK) == 1);
+    k = (int)rawK;
+    assert(rawK - k == 0 && k > 0);
+
     max_iter = 200;
     if (argc == 3) {
-        sscanf(argv[2], "%d", &max_iter);
+        assert(sscanf(argv[2], "%f", &rawMaxIter) == 1);
+        max_iter = (int)rawMaxIter;
+        assert(rawMaxIter - max_iter == 0 && max_iter > 0);
     }
     
     readFile();
