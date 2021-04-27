@@ -11,7 +11,10 @@ char *strtok(char * str, const char *delim);
 double atof(const char * str);
 
 int calcDimension(char buffer[]) {
-    int i, dimension;
+    /*
+    gets a buffer contains the first vector and calculates 
+    */
+    int i, dimension; 
     char c;
     dimension = 0;
     i = 0;
@@ -27,6 +30,7 @@ int calcDimension(char buffer[]) {
 }
 
 void readFile() {
+    /*Reading the input file and put the data into the 'vectors' list*/
     int j;
     char *vectorStr, buffer[1000];
     double **tmp;
@@ -55,6 +59,7 @@ void readFile() {
 }
 
 void initCentroids() {
+    /*Initialize the clusters and their centroids from the first K vectors*/
     int i,j;
     centroids = (double **)calloc(k, dimension*sizeof(double));
     assert(centroids != NULL);
@@ -69,6 +74,7 @@ void initCentroids() {
 }
 
 double distance(double *vector1, double *vector2) {
+    /*'''Claculates the distance between two vectors*/
     double dis = 0;
     int i;
     for (i = 0; i < dimension; i++) {
@@ -78,12 +84,14 @@ double distance(double *vector1, double *vector2) {
 }
 
 int closestCentroid(double *vector) {
+    /*Finds the closest centroid to a vector by the distance function*/
     double minDis, dis;
     int minCenInd,i;
-    minDis = distance(vector, centroids[0]);
-    minCenInd = 0;
     
-    for (i = 0; i < k; i++) {
+    minDis = distance(vector, centroids[0]); /*Initiate the minimum distance to be the distance from the first centroid*/
+    minCenInd = 0; /*Initiate the closest centroid to be the first one*/
+    
+    for (i = 0; i < k; i++) { /*For each centroid (there are K)*/
         dis = distance(vector, centroids[i]);
         if (dis < minDis) {
             minDis = dis;
@@ -94,26 +102,30 @@ int closestCentroid(double *vector) {
 }
  
 void assignVectorToCluster() {
+    /*Finds the closest centroid for each vector and adds
+    the vector to the centroids cluster*/
     int i, newCentroidInd, clusterSize;
     int * cluster;
     clustersSizes = (int *)calloc(k, sizeof(int));
     assert(clustersSizes != NULL);
 
+    /*Clearing all clusters (we do not want to remember what was here)*/
     for (i = 0; i < k; i++) { 
         clusters[i] = (int *)calloc(numOfVectors, sizeof(int));
         assert(clusters[i] != NULL);
     }
         
     for (i = 0; i < numOfVectors; i++) {
-        newCentroidInd = closestCentroid(vectors[i]);
+        newCentroidInd = closestCentroid(vectors[i]); /*Finds the closest centroid*/
         cluster = clusters[newCentroidInd];
         clusterSize = clustersSizes[newCentroidInd];
-        cluster[clusterSize] = i;
+        cluster[clusterSize] = i; /*Adds the vector to the appropriate cluster*/
         clustersSizes[newCentroidInd]++;
     }
 }
 
-double * calcCentroidForCluster(int clusterInd) {
+double* calcCentroidForCluster(int clusterInd) {
+    /*Calculates the centroid for a given cluster*/
     int numOfVectorsInCluster, i, j;
     double * sumVector = (double *)calloc(dimension, sizeof(double));
     assert(sumVector != NULL);
@@ -128,19 +140,21 @@ double * calcCentroidForCluster(int clusterInd) {
     }
 
     for (i = 0; i < dimension; i++) {
-        sumVector[i] /= numOfVectorsInCluster;
+        sumVector[i] /= numOfVectorsInCluster; /*Replace the sum with the average*/
     }
     return sumVector;
 }
 
 void updateCentroidValue() {
+    /*Updates the centroid value for each cluster and checks if 
+    it is different then what we had before*/
     int i, j;
     double * newValue;
     changes = 0;
     for (i = 0; i < k; i++) {
         newValue = calcCentroidForCluster(i);
         for (j = 0; j < dimension; j++) {
-            if (newValue[j] != centroids[i][j]) {
+            if (newValue[j] != centroids[i][j]) { /*If the centroid changed*/
                 changes += 1;
             }    
             centroids[i][j] = newValue[j];
@@ -149,10 +163,11 @@ void updateCentroidValue() {
 }
 
 void printResult() {
+    /*Prints the centroids*/
     int i, j;
     for (i = 0; i < k; i++) {
         for (j = 0; j < dimension; j++) {
-            printf("%.4f", centroids[i][j]);
+            printf("%.4f", centroids[i][j]); /*Format the floats precision to 4 digits*/
             if (j < dimension - 1) {
                 printf(",");
             }
@@ -163,17 +178,17 @@ void printResult() {
 
 int main(int argc, char *argv[]) {
     int counter = 1;
-    assert(argc == 3 || argc == 2);
+    assert(argc == 3 || argc == 2); /*Checks if we have the right amount of args*/
 
     assert(sscanf(argv[1], "%f", &rawK) == 1);
     k = (int)rawK;
-    assert(rawK - k == 0 && k > 0);
+    assert(rawK - k == 0 && k > 0); /*checks if k is a positive int*/
 
     max_iter = 200;
     if (argc == 3) {
         assert(sscanf(argv[2], "%f", &rawMaxIter) == 1);
         max_iter = (int)rawMaxIter;
-        assert(rawMaxIter - max_iter == 0 && max_iter > 0);
+        assert(rawMaxIter - max_iter == 0 && max_iter > 0); /*checks if max_iter is a positive int*/
     }
     
     readFile();
