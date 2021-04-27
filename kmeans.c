@@ -31,15 +31,19 @@ void readFile() {
     char *vectorStr, buffer[1000];
     double **tmp;
     vectorStr = (char *)calloc(dimension, 100*sizeof(char));
+    assert(vectorStr != NULL);
     vectors = (double **)malloc(1 * sizeof(*vectors));
+    assert(vectors != NULL);
     fgets(buffer,1000,stdin);
     dimension = calcDimension(buffer);
     do {
         tmp = realloc(vectors, (numOfVectors + 1) * sizeof(*vectors));
+        assert(tmp != NULL);
         vectors = tmp;
         vectorStr = strtok(buffer, ",");
         j = 0;
         vectors[numOfVectors] = (double *)calloc(dimension, sizeof(double)); 
+        assert(vectors[numOfVectors] != NULL);
         while (vectorStr != NULL) {
             vectors[numOfVectors][j] = atof(vectorStr);
             vectorStr = strtok(NULL, ",");
@@ -53,9 +57,11 @@ void readFile() {
 void initCentroids() {
     int i,j;
     centroids = (double **)calloc(k, dimension*sizeof(double));
+    assert(centroids != NULL);
     assert(k < numOfVectors);
     for (i = 0; i < k; i++) {
         centroids[i] = (double *)calloc(dimension, sizeof(double)); 
+        assert(centroids[i] != NULL);
         for (j = 0; j < dimension; j++) {
             centroids[i][j] = vectors[i][j];
         }
@@ -91,9 +97,11 @@ void assignVectorToCluster() {
     int i, newCentroidInd, clusterSize;
     int * cluster;
     clustersSizes = (int *)calloc(k, sizeof(int));
+    assert(clustersSizes != NULL);
 
     for (i = 0; i < k; i++) { 
         clusters[i] = (int *)calloc(numOfVectors, sizeof(int));
+        assert(clusters[i] != NULL);
     }
         
     for (i = 0; i < numOfVectors; i++) {
@@ -108,6 +116,7 @@ void assignVectorToCluster() {
 double * calcCentroidForCluster(int clusterInd) {
     int numOfVectorsInCluster, i, j;
     double * sumVector = (double *)calloc(dimension, sizeof(double));
+    assert(sumVector != NULL);
     int * cluster;
     numOfVectorsInCluster = clustersSizes[clusterInd];
     cluster = clusters[clusterInd];
@@ -120,7 +129,6 @@ double * calcCentroidForCluster(int clusterInd) {
 
     for (i = 0; i < dimension; i++) {
         sumVector[i] /= numOfVectorsInCluster;
-        /*sumVector[i] = (((int)(10000*sumVector[i])) * 1.0)/10000;*/
     }
     return sumVector;
 }
@@ -172,6 +180,7 @@ int main(int argc, char *argv[]) {
     initCentroids();
     
     clusters = (int **)calloc(k, numOfVectors*sizeof(int));
+    assert(clusters != NULL);
     while ((counter<=max_iter) && (changes > 0)) {
         assignVectorToCluster();
         updateCentroidValue();
