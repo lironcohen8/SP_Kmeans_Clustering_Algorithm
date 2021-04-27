@@ -4,6 +4,8 @@ int k, max_iter, dimension, numOfVectors = 0, changes = 1;
 double **vectors, **centroids;
 int **clusters, *clustersSizes;
 void *calloc(size_t nitems, size_t size);
+void *malloc(size_t size);
+void *realloc(void *ptr, size_t size);
 char *strtok(char * str, const char *delim);
 double atof(const char * str);
 
@@ -23,33 +25,28 @@ int calcDimension(char buffer[]) {
     return dimension+1;
 }
 
-void calcDimensionAndNumOfVectors() {
-    char buffer[1000];
-     while (fgets(buffer,1000,stdin) != NULL) { 
-        if (numOfVectors == 0) {
-            dimension = calcDimension(buffer);
-        }
-        numOfVectors++;
-    }
-}
-
 void readFile() {
-    int i, j;
+    int j;
     char *vectorStr, buffer[1000];
+    double **tmp;
     vectorStr = (char *)calloc(dimension, 100*sizeof(char));
-    vectors = (double **)calloc(numOfVectors, dimension*sizeof(double));
-    rewind(stdin);
-    for (i = 0; i < numOfVectors; i++) {
-        fgets(buffer,1000,stdin);
+    vectors = (double **)malloc(1 * sizeof(*vectors));
+    fgets(buffer,1000,stdin);
+    dimension = calcDimension(buffer);
+    do {
+        tmp = realloc(vectors, (numOfVectors + 1) * sizeof(*vectors));
+        vectors = tmp;
         vectorStr = strtok(buffer, ",");
         j = 0;
-        vectors[i] = (double *)calloc(dimension, sizeof(double)); 
+        vectors[numOfVectors] = (double *)calloc(dimension, sizeof(double)); 
         while (vectorStr != NULL) {
-            vectors[i][j] = atof(vectorStr);
+            vectors[numOfVectors][j] = atof(vectorStr);
             vectorStr = strtok(NULL, ",");
             j++;
         }
+        numOfVectors++;
     }
+    while (fgets(buffer,1000,stdin) != NULL);
 }
 
 void initCentroids() {
@@ -164,7 +161,6 @@ int main(int argc, char *argv[]) {
         sscanf(argv[2], "%d", &max_iter);
     }
     
-    calcDimensionAndNumOfVectors();
     readFile();
     initCentroids();
     
