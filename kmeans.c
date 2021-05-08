@@ -7,6 +7,7 @@ int **clusters, *clustersSizes;
 void *calloc(size_t nitems, size_t size);
 void *malloc(size_t size);
 void *realloc(void *ptr, size_t size);
+void free(void *ptr);
 char *strtok(char * str, const char *delim);
 double atof(const char * str);
 
@@ -31,7 +32,7 @@ int calcDimension(char buffer[]) {
 
 void readFile() {
     /*Reading the input file and put the data into the 'vectors' list*/
-    int j;
+    int j, sizeFull = 1;
     char *vectorStr, buffer[1000];
     double **tmp;
     vectorStr = (char *)calloc(dimension, 100*sizeof(char));
@@ -41,9 +42,12 @@ void readFile() {
     fgets(buffer,1000,stdin);
     dimension = calcDimension(buffer);
     do {
-        tmp = realloc(vectors, (numOfVectors + 1) * sizeof(*vectors));
-        assert(tmp != NULL);
-        vectors = tmp;
+        if (numOfVectors == sizeFull) {
+            sizeFull *= 2;
+            tmp = realloc(vectors, sizeFull * sizeof(*vectors));
+            assert(tmp != NULL);
+            vectors = tmp;
+        }
         vectorStr = strtok(buffer, ",");
         j = 0;
         vectors[numOfVectors] = (double *)calloc(dimension, sizeof(double)); 
@@ -127,9 +131,9 @@ void assignVectorToCluster() {
 double* calcCentroidForCluster(int clusterInd) {
     /*Calculates the centroid for a given cluster*/
     int numOfVectorsInCluster, i, j;
+    int * cluster;
     double * sumVector = (double *)calloc(dimension, sizeof(double));
     assert(sumVector != NULL);
-    int * cluster;
     numOfVectorsInCluster = clustersSizes[clusterInd];
     cluster = clusters[clusterInd];
     
@@ -203,5 +207,9 @@ int main(int argc, char *argv[]) {
     }
 
     printResult();
+    free(vectors);
+    free(centroids);
+    free(clusters);
+    free(clustersSizes);
     return 0;
 }
