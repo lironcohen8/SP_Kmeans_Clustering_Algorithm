@@ -45,7 +45,6 @@ void readFile() {
         if (numOfVectors == sizeFull) {
             sizeFull *= 2;
             tmp = realloc(vectors, sizeFull * sizeof(*vectors));
-            assert(tmp != NULL);
             vectors = tmp;
         }
         vectorStr = strtok(buffer, ",");
@@ -60,6 +59,7 @@ void readFile() {
         numOfVectors++;
     }
     while (fgets(buffer,1000,stdin) != NULL);
+    free(vectorStr);
 }
 
 void initCentroids() {
