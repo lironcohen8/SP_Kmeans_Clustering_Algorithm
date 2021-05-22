@@ -1,6 +1,6 @@
-python kmeans.py 3 600 < tests/input_1.txt > my_output1py.txt
-python kmeans.py 7 < tests/input_2.txt > my_output2py.txt
-python kmeans.py 15 300 < tests/input_3.txt > my_output3py.txt
+python kmeans_try.py 3 600 < tests/input_1.txt > my_output1py.txt
+python kmeans_try.py 7 < tests/input_2.txt > my_output2py.txt
+python kmeans_try.py 15 300 < tests/input_3.txt > my_output3py.txt
 
 gcc -ansi -Wall -Wextra -Werror -pedantic-errors kmeans.c -lm -o kmeans
 @REM gcc ex1.c -o kmeans
